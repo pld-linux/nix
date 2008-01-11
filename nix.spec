@@ -2,7 +2,7 @@ Summary:	A purely functional package manager
 Summary(pl):	Czysto funkcyjny zarządca pakietów
 Name:		nix
 Version:	0.11
-Release:	0.2
+Release:	0.3
 License:	GPL v2.1
 Group:		Applications/System
 Source0:	http://nix.cs.uu.nl/dist/%{name}/%{name}-%{version}/%{name}-%{version}.tar.bz2
@@ -75,10 +75,11 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{name}/store
-mkdir -p $RPM_BUILD_ROOT/%{_localstatedir}/
-mv $RPM_BUILD_ROOT/%{_localstatedir}/%{name}/* $RPM_BUILD_ROOT/%{name}/
-rmdir $RPM_BUILD_ROOT/%{_localstatedir}/%{name}
-ln -s /%{name} $RPM_BUILD_ROOT/%{_localstatedir}/%{name}
+mkdir -p $RPM_BUILD_ROOT/%{name}/var
+mv $RPM_BUILD_ROOT/%{_localstatedir}/%{name} $RPM_BUILD_ROOT/%{name}/var/
+ln -s /%{name}/var/%{name} $RPM_BUILD_ROOT/%{_localstatedir}/%{name}
+mkdir $RPM_BUILD_ROOT/%{name}/var/log
+ln -s %{_localstatedir}/log/%{name} $RPM_BUILD_ROOT/%{name}/var/log/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
