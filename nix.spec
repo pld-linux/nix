@@ -9,6 +9,7 @@ Source0:	http://nix.cs.uu.nl/dist/%{name}/%{name}-%{version}/%{name}-%{version}.
 # Source0-md5:	890c25ac0005ff466683869efc288b67
 URL:		http://nix.cs.uu.nl/
 BuildRequires:	bzip2-devel
+BuildRequires:	curl
 BuildRequires:	db-devel
 BuildRequires:	openssl-devel
 Provides:	/var/nix/manifests
