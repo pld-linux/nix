@@ -10,9 +10,9 @@ Source0:	http://nix.cs.uu.nl/dist/%{name}/%{name}-%{version}/%{name}-%{version}.
 URL:		http://nix.cs.uu.nl/
 BuildRequires:	bzip2-devel
 BuildRequires:	curl
-BuildRequires:	db-devel
+BuildRequires:	db-cxx-devel
 BuildRequires:	openssl-devel
-Provides:	/var/nix/manifests
+ Provides:	/var/nix/manifests
 Provides:	/var/nix/profiles
 Requires:	curl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
