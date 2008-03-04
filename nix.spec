@@ -1,23 +1,22 @@
+# TODO: FHS (/nix, /var/nix are invalid)
 Summary:	A purely functional package manager
 Summary(pl):	Czysto funkcyjny zarządca pakietów
 Name:		nix
 Version:	0.11
 Release:	0.3
-License:	GPL v2.1
+License:	LGPL v2.1+
 Group:		Applications/System
-Source0:	http://nix.cs.uu.nl/dist/%{name}/%{name}-%{version}/%{name}-%{version}.tar.bz2
+Source0:	http://nix.cs.uu.nl/dist/nix/%{name}-%{version}/%{name}-%{version}.tar.bz2
 # Source0-md5:	890c25ac0005ff466683869efc288b67
 URL:		http://nix.cs.uu.nl/
 BuildRequires:	bzip2-devel
 BuildRequires:	curl
 BuildRequires:	db-cxx-devel
 BuildRequires:	openssl-devel
- Provides:	/var/nix/manifests
+Provides:	/var/nix/manifests
 Provides:	/var/nix/profiles
 Requires:	curl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-## %define         filterout_ld    -Wl,--as-needed
 
 %description
 Nix is a purely functional package manager. It allows multiple
@@ -27,43 +26,40 @@ rollbacks, allows non-root users to install software, and has many
 other features.
 
 %description -l pl
-Nix jest czysto funkcyjnym zarządcą pakietów.  Pozwala na jednoczesną
+Nix jest czysto funkcyjnym zarządcą pakietów. Pozwala na jednoczesną
 instalację różnych wersji pakietu, zapewnia kompletność specyfikacji
 zależności, umożliwia niepodzielną aktualizację systemu i wycofanie do
 poprzedniej wersji, pozwala na instalację oprogramowania przez
-użytkowników.  Posiada też wiele innych funkcji.
+użytkowników. Posiada też wiele innych funkcji.
 
 %package devel
 Summary:	Header files for nix
-Summary(pl.UTF-8):	Pliki nagłówkowe nixa
+Summary(pl.UTF-8):	Pliki nagłówkowe niksa
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description devel
-Header files for nix
+Header files for nix.
 
 %description devel -l pl.UTF-8
-Pliki nagłówkowe nixa
-
+Pliki nagłówkowe niksa.
 
 %package emacs-mode
 Summary:	Emacs mode for nix expressions
-Summary(pl.UTF-8):	Tryb Emacsa dla wyrażeń nix
-Group:		Development/Libraries
+Summary(pl.UTF-8):	Tryb Emacsa dla wyrażeń niksa
+Group:		Applications/Editors/Emacs
 Requires:	emacs
 
 %description emacs-mode
-Emacs mode for nix expressions
+Emacs mode for nix expressions.
 
 %description emacs-mode -l pl.UTF-8
-Tryb Emacsa dla wyrażeń nix
-
+Tryb Emacsa dla wyrażeń niksa.
 
 %prep
 %setup -q
 
 %build
-
 %configure \
     --with-bzip2=/usr \
     --with-bdb=/usr \
@@ -77,10 +73,10 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{name}/store
 mkdir -p $RPM_BUILD_ROOT/%{name}/var
-mv $RPM_BUILD_ROOT/%{_localstatedir}/%{name} $RPM_BUILD_ROOT/%{name}/var/
-ln -s /%{name}/var/%{name} $RPM_BUILD_ROOT/%{_localstatedir}/%{name}
+mv $RPM_BUILD_ROOT%{_localstatedir}/%{name} $RPM_BUILD_ROOT/%{name}/var
+ln -s /%{name}/var/%{name} $RPM_BUILD_ROOT%{_localstatedir}/%{name}
 mkdir $RPM_BUILD_ROOT/%{name}/var/log
-ln -s %{_localstatedir}/log/%{name} $RPM_BUILD_ROOT/%{name}/var/log/
+ln -s %{_localstatedir}/log/%{name} $RPM_BUILD_ROOT/%{name}/var/log
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -105,7 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/*.so*
 %{_libdir}/%{name}/*.pm
 %{_localstatedir}/log/%{name}
-%{_localstatedir}/%{name}/
+%{_localstatedir}/%{name}
 %{_mandir}/man*/*
 /%{name}
 %dir %{_sysconfdir}/%{name}
@@ -114,8 +110,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sysconfdir}/profile.d/nix.sh
 
 %files devel
+%defattr(644,root,root,755)
 %{_includedir}/%{name}
 %{_libdir}/%{name}/*.la
 
 %files emacs-mode
+%defattr(644,root,root,755)
 %{_datadir}/emacs/site-lisp/*.el
