@@ -10,12 +10,12 @@ Source0:	http://nix.cs.uu.nl/dist/nix/%{name}-%{version}/%{name}-%{version}.tar.
 # Source0-md5:	890c25ac0005ff466683869efc288b67
 URL:		http://nix.cs.uu.nl/
 BuildRequires:	bzip2-devel
-BuildRequires:	curl
 BuildRequires:	db-cxx-devel
 BuildRequires:	openssl-devel
+BuildRequires:	perl-base >= 1:5.8.0
+Requires:	curl
 Provides:	/var/nix/manifests
 Provides:	/var/nix/profiles
-Requires:	curl
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -61,9 +61,10 @@ Tryb Emacsa dla wyrażeń niksa.
 
 %build
 %configure \
-    --with-bzip2=/usr \
-    --with-bdb=/usr \
-    --with-store-dir=/%{name}/store
+	curl=/usr/bin/curl \
+	--with-bzip2=/usr \
+	--with-bdb=/usr \
+	--with-store-dir=/%{name}/store
 %{__make}
 
 %install
