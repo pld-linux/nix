@@ -1,6 +1,6 @@
 # TODO: FHS (/nix, /var/nix are invalid)
 Summary:	A purely functional package manager
-Summary(pl):	Czysto funkcyjny zarządca pakietów
+Summary(pl.UTF-8):	Czysto funkcyjny zarządca pakietów
 Name:		nix
 Version:	0.11
 Release:	0.3
