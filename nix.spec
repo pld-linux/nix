@@ -25,7 +25,7 @@ dependency specifications are complete, supports atomic upgrades and
 rollbacks, allows non-root users to install software, and has many
 other features.
 
-%description -l pl
+%description -l pl.UTF-8
 Nix jest czysto funkcyjnym zarządcą pakietów. Pozwala na jednoczesną
 instalację różnych wersji pakietu, zapewnia kompletność specyfikacji
 zależności, umożliwia niepodzielną aktualizację systemu i wycofanie do
