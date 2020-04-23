@@ -1,0 +1,15 @@
+--- nix-2.3.4/configure.ac.orig	1970-01-01 01:00:01.000000000 +0100
++++ nix-2.3.4/configure.ac	2020-04-21 12:04:21.564576870 +0200
+@@ -235,9 +235,9 @@
+ AC_LANG_POP(C++)
+ 
+ if test -n "$enable_s3"; then
+-  declare -a aws_version_tokens=($(printf '#include <aws/core/VersionConfig.h>\nAWS_SDK_VERSION_STRING' | $CPP $CPPFLAGS - | grep -v '^#.*' | sed 's/"//g' | tr '.' ' '))
+-  AC_DEFINE_UNQUOTED([AWS_VERSION_MAJOR], ${aws_version_tokens@<:@0@:>@}, [Major version of aws-sdk-cpp.])
+-  AC_DEFINE_UNQUOTED([AWS_VERSION_MINOR], ${aws_version_tokens@<:@1@:>@}, [Minor version of aws-sdk-cpp.])
++  aws_version="$(printf '#include <aws/core/VersionConfig.h>\nAWS_SDK_VERSION_STRING' | $CPP $CPPFLAGS - | grep -v '^#.*' | sed 's/"//g')"
++  AC_DEFINE_UNQUOTED([AWS_VERSION_MAJOR], $(echo "$aws_version" | cut -d. -f1), [Major version of aws-sdk-cpp.])
++  AC_DEFINE_UNQUOTED([AWS_VERSION_MINOR], $(echo "$aws_version" | cut -d. -f2), [Minor version of aws-sdk-cpp.])
+ fi
+ 
+ 
