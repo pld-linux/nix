@@ -5,15 +5,20 @@
 Summary:	A purely functional package manager
 Summary(pl.UTF-8):	Czysto funkcyjny zarządca pakietów
 Name:		nix
-Version:	2.3.4
+Version:	2.3.10
 Release:	0.1
 License:	LGPL v2.1+
 Group:		Applications/System
+#Source0Download: https://nixos.org/download.html
 Source0:	https://nixos.org/releases/nix/%{name}-%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	0d8486cb6622bb53116200d3a3d378ca
+# Source0-md5:	116a603858b2a31f847033cdb4f40249
 Patch0:		%{name}-sh.patch
 Patch1:		%{name}-paths.patch
+Patch2:		%{name}-ldflags.patch
 URL:		https://nixos.org/nix/
+BuildRequires:	autoconf >= 2.50
+BuildRequires:	autoconf-archive
+BuildRequires:	automake
 # aws-sdk-cpp/aws-cpp-sdk-s3 (aws/s3/S3Client.h)
 BuildRequires:	boost-devel >= 1.66
 BuildRequires:	bzip2-devel
@@ -36,9 +41,9 @@ BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
 BuildRequires:	xz-devel
 Requires:	%{name}-libs = %{version}-%{release}
-Obsoletes:	nix-emacs-mode
 Provides:	/var/nix/manifests
 Provides:	/var/nix/profiles
+Obsoletes:	nix-emacs-mode < 2.3
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		nixdir		/var/lib/nix
@@ -86,6 +91,7 @@ Pliki nagłówkowe Niksa.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__aclocal} -I m4
@@ -95,7 +101,9 @@ Pliki nagłówkowe Niksa.
 	--localstatedir=%{nixdir}/var \
 	--with-store-dir=%{nixdir}/store
 
+# avoid BOOST_LDFLAGS=-L%{_libdir} which causes to link with system nix libraries instead of built ones
 %{__make} \
+	BOOST_LDFLAGS="" \
 	V=1
 
 %if %{with perl}
@@ -115,11 +123,14 @@ cd perl
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+	BOOST_LDFLAGS="" \
+	DESTDIR=$RPM_BUILD_ROOT \
+	V=1
 
 %if %{with perl}
 %{__make} -C perl install \
-	DESTDIR=$RPM_BUILD_ROOT
+	DESTDIR=$RPM_BUILD_ROOT \
+	V=1
 %endif
 
 install -d $RPM_BUILD_ROOT%{nixdir}/{store,var/nix/{gcroots,profiles}/per-user}
