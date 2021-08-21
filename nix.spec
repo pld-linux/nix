@@ -5,13 +5,13 @@
 Summary:	A purely functional package manager
 Summary(pl.UTF-8):	Czysto funkcyjny zarządca pakietów
 Name:		nix
-Version:	2.3.10
+Version:	2.3.15
 Release:	0.1
 License:	LGPL v2.1+
 Group:		Applications/System
 #Source0Download: https://nixos.org/download.html
 Source0:	https://nixos.org/releases/nix/%{name}-%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	116a603858b2a31f847033cdb4f40249
+# Source0-md5:	d5b5036347c4c1c7ddc738606703aee9
 Patch0:		%{name}-sh.patch
 Patch1:		%{name}-paths.patch
 Patch2:		%{name}-ldflags.patch
