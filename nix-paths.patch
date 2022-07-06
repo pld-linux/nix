@@ -1,9 +1,10 @@
---- nix-2.3.4/misc/systemd/local.mk.orig	1970-01-01 01:00:01.000000000 +0100
-+++ nix-2.3.4/misc/systemd/local.mk	2020-04-21 18:43:49.318065743 +0200
-@@ -1,5 +1,5 @@
- ifeq ($(OS), Linux)
+--- nix-2.9.2/misc/systemd/local.mk.orig	2022-07-04 11:48:18.334153925 +0200
++++ nix-2.9.2/misc/systemd/local.mk	2022-07-04 16:55:51.821491895 +0200
+@@ -1,6 +1,6 @@
+ ifdef HOST_LINUX
  
 -  $(foreach n, nix-daemon.socket nix-daemon.service, $(eval $(call install-file-in, $(d)/$(n), $(prefix)/lib/systemd/system, 0644)))
 +  $(foreach n, nix-daemon.socket nix-daemon.service, $(eval $(call install-file-in, $(d)/$(n), /lib/systemd/system, 0644)))
+   $(foreach n, nix-daemon.conf, $(eval $(call install-file-in, $(d)/$(n), $(prefix)/lib/tmpfiles.d, 0644)))
  
- endif
+   clean-files += $(d)/nix-daemon.socket $(d)/nix-daemon.service $(d)/nix-daemon.conf

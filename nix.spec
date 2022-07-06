@@ -5,40 +5,53 @@
 Summary:	A purely functional package manager
 Summary(pl.UTF-8):	Czysto funkcyjny zarządca pakietów
 Name:		nix
-Version:	2.3.15
+Version:	2.9.2
 Release:	0.1
 License:	LGPL v2.1+
 Group:		Applications/System
-#Source0Download: https://nixos.org/download.html
-Source0:	https://nixos.org/releases/nix/%{name}-%{version}/%{name}-%{version}.tar.xz
-# Source0-md5:	d5b5036347c4c1c7ddc738606703aee9
+#Source0Download: https://github.com/NixOS/nix/tags
+Source0:	https://github.com/NixOS/nix/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	2cfd0da58d4ba6a1d93f18c1bc931c1a
 Patch0:		%{name}-sh.patch
 Patch1:		%{name}-paths.patch
 Patch2:		%{name}-ldflags.patch
+Patch3:		%{name}-g++.patch
+Patch4:		%{name}-fix_nix_DIR_in_doc_local_mk.patch
 URL:		https://nixos.org/nix/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	autoconf-archive
 BuildRequires:	automake
-# aws-sdk-cpp/aws-cpp-sdk-s3 (aws/s3/S3Client.h)
+# TODO: aws-sdk-cpp/aws-cpp-sdk-s3 (aws/s3/S3Client.h)
+BuildRequires:	bison
 BuildRequires:	boost-devel >= 1.66
 BuildRequires:	bzip2-devel
 %{?with_perl:BuildRequires:	curl}
 BuildRequires:	curl-devel
 BuildRequires:	editline-devel >= 1.15.2
+BuildRequires:	flex
 BuildRequires:	gc-devel
+BuildRequires:	graphviz
+BuildRequires:	gtest-devel
+BuildRequires:	jq
+BuildRequires:	libarchive-devel >= 3.1.2
 BuildRequires:	libbrotli-devel
 BuildRequires:	libseccomp-devel
 BuildRequires:	libsodium-devel
 BuildRequires:	libstdc++-devel >= 6:7
+BuildRequires:	lowdown-devel >= 0.9.0
+BuildRequires:	lsof
+BuildRequires:	mdbook
+BuildRequires:	nlohmann-json-devel >= 3.10.5-3
 BuildRequires:	openssl-devel
-BuildRequires:	sqlite3-devel >= 3.6.19
+BuildRequires:	rpm-build >= 4.6
+BuildRequires:	rpmbuild(macros) >= 1.720
 %if %{with perl}
 BuildRequires:	perl-DBI
 BuildRequires:	perl-DBD-SQLite
 BuildRequires:	perl-base >= 1:5.8.0
 %endif
-BuildRequires:	tar >= 1:1.22
-BuildRequires:	xz
+BuildRequires:	pkgconfig >= 1:0.9.0
+BuildRequires:	sqlite3-devel >= 3.6.19
 BuildRequires:	xz-devel
 Requires:	%{name}-libs = %{version}-%{release}
 Provides:	/var/nix/manifests
@@ -87,11 +100,55 @@ Header files for Nix.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe Niksa.
 
+%package -n bash-completion-nix
+Summary:	Bash completion for nix commands
+Summary(pl.UTF-8):	Dopełnianie parametrów w bashu dla poleceń nix
+Group:		Applications/Shells
+Requires:	%{name} = %{version}-%{release}
+Requires:	bash-completion >= 2.0
+BuildArch:	noarch
+
+%description -n bash-completion-nix
+Bash completion for nix commands.
+
+%description -n bash-completion-nix -l pl.UTF-8
+Dopełnianie parametrów w bashu dla poleceń nix.
+
+%package -n fish-completion-nix
+Summary:	Fish completion for nix commands
+Summary(pl.UTF-8):	Dopełnianie parametrów w fishu dla poleceń nix
+Group:		Applications/Shells
+Requires:	%{name} = %{version}-%{release}
+Requires:	fish
+BuildArch:	noarch
+
+%description -n fish-completion-nix
+Fish completion for nix commands.
+
+%description -n fish-completion-nix -l pl.UTF-8
+Dopełnianie parametrów w fishu dla poleceń nix.
+
+%package -n zsh-completion-nix
+Summary:	Zsh completion for nix commands
+Summary(pl.UTF-8):	Dopełnianie parametrów w zsh dla poleceń nix
+Group:		Applications/Shells
+Requires:	%{name} = %{version}-%{release}
+Requires:	zsh
+BuildArch:	noarch
+
+%description -n zsh-completion-nix
+Zsh completion for nix commands.
+
+%description -n zsh-completion-nix -l pl.UTF-8
+Dopełnianie parametrów w zsh dla poleceń nix.
+
 %prep
 %setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %{__aclocal} -I m4
@@ -104,6 +161,8 @@ Pliki nagłówkowe Niksa.
 # avoid BOOST_LDFLAGS=-L%{_libdir} which causes to link with system nix libraries instead of built ones
 %{__make} \
 	BOOST_LDFLAGS="" \
+	GLOBAL_CXXFLAGS="%{rpmcxxflags} -Wall -include config.h -std=c++17 -I src -fPIC" \
+	GLOBAL_LDFLAGS="%{rpmldflags}" \
 	V=1
 
 %if %{with perl}
@@ -135,25 +194,22 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{nixdir}/{store,var/nix/{gcroots,profiles}/per-user}
 
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man1/nix3-manpages
 # dead upstart stuff
 %{__rm} -r $RPM_BUILD_ROOT/etc/init
-# packaged as %doc
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/manual
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README.md doc/manual/{manual.html,figures,images}
+%doc README.md
 %attr(755,root,root) %{_bindir}/nix*
 %dir %{_libdir}/%{name}
 %attr(755,root,root) %{_libdir}/%{name}/build-remote
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/corepkgs
-%{_datadir}/%{name}/sandbox
 %{systemdunitdir}/nix-daemon.service
 %{systemdunitdir}/nix-daemon.socket
+%{systemdtmpfilesdir}/nix-daemon.conf
 /etc/profile.d/nix.sh
 /etc/profile.d/nix-daemon.sh
 %dir %{nixdir}
@@ -164,13 +220,19 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{nixdir}/var/nix/gcroots/per-user
 %dir %{nixdir}/var/nix/profiles
 %dir %{nixdir}/var/nix/profiles/per-user
+%{_mandir}/man1/nix.1*
 %{_mandir}/man1/nix-*.1*
+%{_mandir}/man1/nix3-*.1*
 %{_mandir}/man5/nix.conf.5*
 %{_mandir}/man8/nix-daemon.8*
+%dir %{_docdir}/nix
+%{_docdir}/nix/manual
 
 %files libs
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libnixcmd.so
 %attr(755,root,root) %{_libdir}/libnixexpr.so
+%attr(755,root,root) %{_libdir}/libnixfetchers.so
 %attr(755,root,root) %{_libdir}/libnixmain.so
 %attr(755,root,root) %{_libdir}/libnixstore.so
 %attr(755,root,root) %{_libdir}/libnixutil.so
@@ -178,6 +240,20 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %{_includedir}/nix
+%{_pkgconfigdir}/nix-cmd.pc
 %{_pkgconfigdir}/nix-expr.pc
 %{_pkgconfigdir}/nix-main.pc
 %{_pkgconfigdir}/nix-store.pc
+
+%files -n bash-completion-nix
+%defattr(644,root,root,755)
+%{bash_compdir}/nix
+
+%files -n fish-completion-nix
+%defattr(644,root,root,755)
+%{fish_compdir}/nix.fish
+
+%files -n zsh-completion-nix
+%defattr(644,root,root,755)
+%{zsh_compdir}/_nix
+%{zsh_compdir}/run-help-nix
