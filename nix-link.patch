@@ -1,0 +1,8 @@
+--- nix-2.14.1/src/libexpr/tests/local.mk.orig	2023-03-02 00:24:44.000000000 +0100
++++ nix-2.14.1/src/libexpr/tests/local.mk	2023-04-02 21:38:17.553805363 +0200
+@@ -16,4 +16,4 @@ libexpr-tests_CXXFLAGS += -I src/libexpr
+ 
+ libexpr-tests_LIBS = libstore-tests libutils-tests libexpr libutil libstore libfetchers
+ 
+-libexpr-tests_LDFLAGS := $(GTEST_LIBS) -lgmock
++libexpr-tests_LDFLAGS := -lrapidcheck $(GTEST_LIBS) -lgmock

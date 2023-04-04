@@ -5,17 +5,17 @@
 Summary:	A purely functional package manager
 Summary(pl.UTF-8):	Czysto funkcyjny zarządca pakietów
 Name:		nix
-Version:	2.9.2
+Version:	2.14.1
 Release:	0.1
 License:	LGPL v2.1+
 Group:		Applications/System
 #Source0Download: https://github.com/NixOS/nix/tags
 Source0:	https://github.com/NixOS/nix/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	2cfd0da58d4ba6a1d93f18c1bc931c1a
+# Source0-md5:	a132c8cf9a246c6ceecb8625163beff0
 Patch0:		%{name}-sh.patch
 Patch1:		%{name}-paths.patch
 Patch2:		%{name}-ldflags.patch
-Patch3:		%{name}-g++.patch
+Patch3:		%{name}-link.patch
 Patch4:		%{name}-fix_nix_DIR_in_doc_local_mk.patch
 URL:		https://nixos.org/nix/
 BuildRequires:	autoconf >= 2.50
@@ -41,8 +41,11 @@ BuildRequires:	libstdc++-devel >= 6:7
 BuildRequires:	lowdown-devel >= 0.9.0
 BuildRequires:	lsof
 BuildRequires:	mdbook
+BuildRequires:	mdbook-linkcheck
 BuildRequires:	nlohmann-json-devel >= 3.10.5-3
 BuildRequires:	openssl-devel
+# with gtest support
+BuildRequires:	rapidcheck-devel
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.720
 %if %{with perl}
@@ -210,7 +213,9 @@ rm -rf $RPM_BUILD_ROOT
 %{systemdunitdir}/nix-daemon.service
 %{systemdunitdir}/nix-daemon.socket
 %{systemdtmpfilesdir}/nix-daemon.conf
+/etc/profile.d/nix.fish
 /etc/profile.d/nix.sh
+/etc/profile.d/nix-daemon.fish
 /etc/profile.d/nix-daemon.sh
 %dir %{nixdir}
 %attr(1775,root,root) %dir %{nixdir}/store
