@@ -140,7 +140,7 @@ Requires:	libseccomp-devel%{?_isa} >= 2.5.5
 Requires:	libsodium-devel%{?_isa}
 Requires:	libstdc++-devel%{?_isa} >= 6:11
 Requires:	lowdown-devel%{?_isa} >= 0.9.0
-Requires:	nlohmann-json-devel%{?_isa} >= 3.12
+Requires:	nlohmann-json-devel >= 3.12
 Requires:	openssl-devel%{?_isa} >= 1.1.1
 Requires:	sqlite3-devel%{?_isa} >= 3.6.19
 Requires:	zstd-devel%{?_isa} >= 1.4.0
